@@ -38,7 +38,7 @@ class HTTPClient(object):
 
     def connect(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(5)
+        self.socket.settimeout(10)
         self.socket.connect((host, port))
         return self.socket
 
@@ -70,18 +70,21 @@ class HTTPClient(object):
         return buffer.decode('utf-8')
 
     def read_result(self, data):
-        print("Log: DATA\n", data)
         try:
             temp = data.splitlines()[0]
             temp2 = temp.split(' ', 2)
             resp_code = int(temp2[1])
-            resp_mess = temp2[2]
             i = data.splitlines().index('')
-            t = data.splitlines()[i:]
-            resp_body = ''
-            for b in t:
-                resp_body += b
-            return resp_code, resp_mess, resp_body
+            t = data.splitlines()[i+1:]
+            # pdb.set_trace()
+            if len(t)>1:
+                resp_body = ''
+                for b in t:
+                    resp_body += b
+            else:
+                resp_body=t[0]
+
+            return resp_code, resp_body
         except Exception as e:
             return ("Log: Some other error in read_result. ", e)
 
@@ -109,6 +112,12 @@ class HTTPClient(object):
         path = new_rl.path
         if not port:
             port = 80
+        body = ''
+        if args:
+            for key in args:
+                body += key+'='+args[key]+'&'
+        body = body[:-1]
+        c_len = len(body)
 
         header = "POST "+path+" HTTP/1.1\r\nHost: "+host+"\r\n"
         header += "User-Agent: Mozilla/5.0\r\n"
@@ -116,26 +125,20 @@ class HTTPClient(object):
         header += "Accept-Language: en-US, en; q=0.5\r\n"
         header += "Accept-Encoding: gzip, deflate\r\n"
         header += "Content-Type: application/x-www-form-urlencoded, application/json; charset=UTF-8\r\n"
-        
-        body = ''
-        if args:
-            for key in args:
-                body += key+'='+args[key]+'&'
-        body = body[:-1]+'\r\n'
-        c_len = len(body)
         header += "Content-Length: "+str(c_len)+"\r\n"
         header += "Connection: keep-alive\r\n"
         header += "Upgrade-Insecure-Requests: 1\r\n"
         header += "DNT: 1\r\n"
         header += "\r\n"
+        message = header+body
+
         sock = self.connect(host, port)
-        if not sock.sendall(header.encode()):
+        if not sock.sendall(message.encode()):
             data = self.recvall(sock)
-            c, m, b = self.read_result(data)
-            print("Log: ", c)
+            c, b = self.read_result(data)
+            print("Log:\nCode: ",c,"\nBody:",b)
             return HTTPResponse(code=c, body=b)
-        else:
-            return ("Error in POST method")
+
 
     def command(self, url, command="GET", args=None):
         if (command == "POST"):

@@ -126,7 +126,7 @@ class HTTPClient(object):
         body = ''
         if args:
             for key in args:
-                body += key+'='+args[key]+'&'
+                body += key+'='+args[key].replace(' ', '+')+'&'
         body = body[:-1]
         c_len = len(body)
 

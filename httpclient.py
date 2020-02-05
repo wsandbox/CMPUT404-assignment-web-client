@@ -76,14 +76,12 @@ class HTTPClient(object):
             resp_code = int(temp2[1])
             i = data.splitlines().index('')
             t = data.splitlines()[i+1:]
-            # pdb.set_trace()
             if len(t)>1:
                 resp_body = ''
                 for b in t:
                     resp_body += b
             else:
                 resp_body=t[0]
-            pdb.set_trace()
             return resp_code, resp_body
         except Exception as e:
             return ("Log: Some other error in read_result. ", e)
@@ -101,17 +99,15 @@ class HTTPClient(object):
         sock = self.connect(host, port)
         header = "GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n"
         header += "User-Agent: Mozilla/5.0\r\n"
-        header += "Accept: text/html, text/css, application/xhtml+xml, application/xml;q=0.9, */*;q=0.1\r\n"
+        header += "Accept: text/html, text/css, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8\r\n"
         header += "Accept-Language: en-CA, en-US;q=0.7, en; q=0.3\r\n"
-        header += "Accept-Encoding: gzip, deflate\r\n"
-        # header += "Content-Length: 0\r\n"
-        # header += "Content-Type: text/html, application/x-www-form-urlencoded, application/json; charset=UTF-8\r\n"
+        header += "Content-Length: 0\r\n"
+        header += "Content-Type: text/html; charset=utf-8\r\n"
         header += "Content-Encoding: gzip, deflate\r\n"
-        header += "Connection: keep-alive\r\n"
+        header += "Connection: close\r\n"
         header += "Upgrade-Insecure-Requests: 1\r\n"
         header += "DNT: 1\r\n"
         header +="\r\n"
-        # pdb.set_trace()
         if not sock.sendall(header.encode()):
             data = self.recvall(sock)
             c, b = self.read_result(data)

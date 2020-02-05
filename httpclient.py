@@ -102,7 +102,7 @@ class HTTPClient(object):
         header += "Accept: text/html, text/css, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8\r\n"
         header += "Accept-Language: en-CA, en-US;q=0.7, en; q=0.3\r\n"
         header += "Content-Length: 0\r\n"
-        header += "Content-Type: text/html; charset=utf-8\r\n"
+        header += "Content-Type: text/html, application/x-www-form-urlencoded;charset=utf-8\r\n"
         header += "Content-Encoding: gzip, deflate\r\n"
         header += "Connection: close\r\n"
         header += "Upgrade-Insecure-Requests: 1\r\n"

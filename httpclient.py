@@ -23,7 +23,7 @@ import socket
 import re
 import pdb  
 # you may use urllib to encode data appropriately
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlencode
 
 def help():
     print("httpclient.py [GET/POST] [URL]\n")
@@ -125,9 +125,7 @@ class HTTPClient(object):
             port = 80
         body = ''
         if args:
-            for key in args:
-                body += key+'='+args[key].replace(' ', '+')+'&'
-        body = body[:-1]
+            body = urlencode(args)
         c_len = len(body)
 
         header = "POST "+path+" HTTP/1.1\r\nHost: "+host+"\r\n"

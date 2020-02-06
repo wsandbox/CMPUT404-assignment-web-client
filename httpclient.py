@@ -163,7 +163,7 @@ if __name__ == "__main__":
         sys.exit(1)
     elif (len(sys.argv) == 3):
         ## running specified HTTP command
-        print(client.command( sys.argv[2], sys.argv[1] ))
+        print(client.command( sys.argv[2], sys.argv[1] ).body)
     else:
         ## running GET command by default
-        print(client.command( sys.argv[1] ))
+        print(client.command( sys.argv[1] ).body)
